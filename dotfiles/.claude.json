@@ -15,7 +15,8 @@
     "prompt-queue": 4,
     "enter-to-steer-in-relatime": 4,
     "todo-list": 4,
-    "install-github-app": 4
+    "install-github-app": 4,
+    "install-slack-app": 4
   },
   "promptQueueUseCount": 3,
   "cachedGrowthBookFeatures": {
@@ -824,6 +825,10 @@
     "prompt-queue": 1,
     "enter-to-steer-in-relatime": 1,
     "todo-list": 1,
-    "install-github-app": 1
+    "install-github-app": 1,
+    "install-slack-app": 1
+  },
+  "feedbackSurveyState": {
+    "lastShownTime": 1783977350749
   }
 }
