@@ -38,3 +38,17 @@
 .config/gtk-4.0/settings.ini
 .zshrc
 .bash_aliases
+
+# --- claude code (config + chat history ONLY; secrets deliberately excluded) ---
+# NOT listed on purpose: .claude/.credentials.json (OAuth token),
+# .claude/sessions, .claude/session-env, .claude/shell-snapshots (env/secrets),
+# .claude/cache, .claude/downloads, .claude/backups, .claude/file-history,
+# .claude/plugins (noise/bloat).
+.claude.json
+.claude/settings.json
+.claude/history.jsonl
+.claude/projects
+.claude/commands
+.claude/agents
+.claude/CLAUDE.md
+.claude/memory
