@@ -20,7 +20,8 @@
     "drag-and-drop-images": 4,
     "double-esc-code-restore": 4,
     "continue": 5,
-    "shift-tab": 5
+    "shift-tab": 5,
+    "image-paste": 5
   },
   "promptQueueUseCount": 3,
   "cachedGrowthBookFeatures": {
@@ -851,7 +852,8 @@
     "drag-and-drop-images": 1,
     "double-esc-code-restore": 1,
     "continue": 1,
-    "shift-tab": 1
+    "shift-tab": 1,
+    "image-paste": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1783977350749
