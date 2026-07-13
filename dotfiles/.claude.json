@@ -13,9 +13,11 @@
     "color-when-multi-clauding": 4,
     "status-line": 4,
     "prompt-queue": 4,
-    "enter-to-steer-in-relatime": 4
+    "enter-to-steer-in-relatime": 4,
+    "todo-list": 4,
+    "install-github-app": 4
   },
-  "promptQueueUseCount": 2,
+  "promptQueueUseCount": 3,
   "cachedGrowthBookFeatures": {
     "tengu_chert_bezel": true,
     "tengu_ashen_kelp": true,
@@ -820,6 +822,8 @@
     "color-when-multi-clauding": 1,
     "status-line": 1,
     "prompt-queue": 1,
-    "enter-to-steer-in-relatime": 1
+    "enter-to-steer-in-relatime": 1,
+    "todo-list": 1,
+    "install-github-app": 1
   }
 }

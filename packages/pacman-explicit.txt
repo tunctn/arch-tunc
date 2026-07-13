@@ -56,6 +56,7 @@ wget
 wireplumber
 wl-clipboard
 wofi
+wpaperd
 wpa_supplicant
 xdg-desktop-portal-hyprland
 xdg-utils

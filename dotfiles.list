@@ -18,6 +18,9 @@
 .config/hypr
 .config/kitty
 
+# --- wallpapers (binary images; kept so wpaperd works after a restore) ---
+Pictures/wallpapers
+
 # --- kde/misc ---
 .config/dolphinrc
 .config/mimeapps.list
