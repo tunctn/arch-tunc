@@ -1,0 +1,16 @@
+# Defense-in-depth: never commit key/secret material even if it slips into
+# a tracked path by mistake. Basename patterns match at any depth.
+*.key
+*.pem
+*_rsa
+*_dsa
+*_ecdsa
+*_ed25519
+id_*
+*.gpg
+*.kdbx
+.env
+.env.*
+.netrc
+*.token
+*credentials*

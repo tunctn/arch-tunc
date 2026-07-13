@@ -1,0 +1,24 @@
+# Allowlist of paths to sync, relative to $HOME. One per line.
+# Only what's listed here is copied into the repo and pushed to GitHub.
+# Lines starting with # are ignored. Missing paths are skipped silently.
+#
+# SAFETY: never add anything containing secrets/sessions here, e.g.
+#   .ssh  .config/1Password  .config/op  .config/BraveSoftware
+#   .config/google-chrome*  .config/chromium  .config/vivaldi*
+#   .mozilla  .config/pulse  .config/session  .netrc  .env
+
+# --- shell ---
+.bashrc
+.bash_profile
+.profile
+.gitconfig
+.inputrc
+
+# --- hyprland desktop ---
+.config/hypr
+.config/kitty
+
+# --- kde/misc ---
+.config/dolphinrc
+.config/mimeapps.list
+.config/autostart
