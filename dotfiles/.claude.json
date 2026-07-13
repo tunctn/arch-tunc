@@ -9,7 +9,9 @@
     "default-permission-mode-config": 2,
     "agents-view-multiclauding": 3,
     "memory-command": 3,
-    "theme-command": 3
+    "theme-command": 3,
+    "color-when-multi-clauding": 4,
+    "status-line": 4
   },
   "promptQueueUseCount": 2,
   "cachedGrowthBookFeatures": {
@@ -812,6 +814,8 @@
     "default-permission-mode-config": 1,
     "agents-view-multiclauding": 1,
     "memory-command": 1,
-    "theme-command": 1
+    "theme-command": 1,
+    "color-when-multi-clauding": 1,
+    "status-line": 1
   }
 }
