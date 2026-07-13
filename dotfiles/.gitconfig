@@ -1,0 +1,5 @@
+[user]
+	name = tunc
+	email = t@tunc.co
+[init]
+	defaultBranch = main
