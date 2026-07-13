@@ -1,0 +1,13 @@
+# wpaperd config — https://github.com/danyspin97/wpaperd
+# "default" applies to every monitor unless a monitor is named explicitly.
+[default]
+path = "~/Pictures/wallpapers"   # a folder => rotate through its images
+duration = "30m"                 # how long each wallpaper stays up
+sorting = "random"               # random | ascending | descending
+mode = "center"                  # center | fit | stretch | tile
+transition-time = 700            # crossfade duration in ms
+
+# Example: override a single monitor by name (yours is DP-2)
+# [DP-2]
+# path = "~/Pictures/wallpapers"
+# duration = "1h"
