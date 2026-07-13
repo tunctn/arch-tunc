@@ -22,3 +22,19 @@
 .config/dolphinrc
 .config/mimeapps.list
 .config/autostart
+
+# --- extras (auto-synced whenever these get created; skipped until then) ---
+.config/nvim
+.config/waybar
+.config/wofi
+.config/rofi
+.config/dunst
+.config/mako
+.config/swaync
+.config/wlogout
+.config/swaylock
+.config/starship.toml
+.config/gtk-3.0/settings.ini
+.config/gtk-4.0/settings.ini
+.zshrc
+.bash_aliases
