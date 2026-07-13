@@ -18,7 +18,8 @@
     "install-github-app": 4,
     "install-slack-app": 4,
     "drag-and-drop-images": 4,
-    "double-esc-code-restore": 4
+    "double-esc-code-restore": 4,
+    "continue": 5
   },
   "promptQueueUseCount": 3,
   "cachedGrowthBookFeatures": {
@@ -847,7 +848,8 @@
     "install-github-app": 1,
     "install-slack-app": 1,
     "drag-and-drop-images": 1,
-    "double-esc-code-restore": 1
+    "double-esc-code-restore": 1,
+    "continue": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1783977350749

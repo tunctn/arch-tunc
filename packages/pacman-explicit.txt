@@ -15,7 +15,6 @@ gst-plugin-pipewire
 htop
 hyprland
 hyprlauncher
-hyprpaper
 hyprpolkitagent
 intel-ucode
 kitty
