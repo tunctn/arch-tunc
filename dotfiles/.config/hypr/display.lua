@@ -5,5 +5,5 @@
 hl.monitor({ output = "HEADLESS-2", mode = "3840x2160@120.00", position = "auto", scale = 1.5 })
 
 -- Cursor size only affects apps launched after a Hyprland restart.
-hl.env("XCURSOR_SIZE", "24")
-hl.env("HYPRCURSOR_SIZE", "24")
+hl.env("XCURSOR_SIZE", "32")
+hl.env("HYPRCURSOR_SIZE", "32")
