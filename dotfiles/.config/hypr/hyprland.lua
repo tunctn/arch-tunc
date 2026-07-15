@@ -86,11 +86,10 @@ hl.env("LIBVA_DRIVER_NAME", "nvidia")
 hl.env("__GLX_VENDOR_LIBRARY_NAME","nvidia")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT","auto")
 
--- Steam is XWayland-only and cannot do fractional scaling itself, so with
--- force_zero_scaling below it would render at 1x and come out tiny. This makes
--- Steam draw its own UI at native pixels instead. Must match the monitor scale
--- set in display.lua -- update both together if you change scale.
-hl.env("STEAM_FORCE_DESKTOPUI_SCALING", "1.5")
+-- NOTE: STEAM_FORCE_DESKTOPUI_SCALING / -forcedesktopscaling are NOT set here on
+-- purpose. Valve removed both when they added Settings > Accessibility; verified
+-- ignored on Steam 1.0.0.87 (1.5 and 2.0 rendered identically). Steam's UI scale
+-- now lives in Settings > Accessibility and is stored in Steam's own config.
 
 
 -----------------------
