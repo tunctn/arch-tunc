@@ -39,8 +39,15 @@ systemd (host, root)
 - **`--ephemeral` = one job per runner.** GitHub retires the registration after
   a single job; `Restart=always` then starts a clean cycle. No state leaks
   between jobs.
-- **Clean slate every cycle.** `_work`, `.runner`, `.credentials`, and
-  `.credentials_rsaparams` are deleted before each `config.sh`.
+- **Clean slate every cycle.** `_work`, `.runner`, `.credentials`,
+  `.credentials_rsaparams`, and `.docker` are deleted before each `config.sh`.
+- **Per-slot docker credentials.** All slots share one dockerd, and
+  `docker/login-action` logs out in its post step — so a finishing job would wipe
+  the registry creds a *concurrent* job is still pushing with (symptom: `error
+  from registry: unauthorized` on a push that should work). The cycle script
+  writes `DOCKER_CONFIG=$DIR/.docker` into each slot's `.env`, giving every slot
+  isolated credentials. This is a direct consequence of running >1 slot; do not
+  remove it while parallel slots are enabled.
 - **Container isolation.** Jobs run as unprivileged `gh-runner` inside incus,
   not on the host. `Requires=incus.service` so the units can't start without it.
 - **`ExecStopPost`** pkills the in-container `Runner.Listener` so a stopped unit
