@@ -200,9 +200,22 @@ class MonitorRow:
         self.logical = Gtk.Label(xalign=0)
         inner.pack_start(self.logical, False, False, 0)
 
-        self._sync(cur_hz, round(float(m["scale"]), 6))
-        self.res.connect("changed", lambda _c: self._sync())
+        # allow_odd: only at init, to reflect a scale the compositor is actually
+        # on even if our enumeration wouldn't produce it.
+        self._sync(cur_hz, round(float(m["scale"]), 6), allow_odd=True)
+        self.res.connect("changed", self._on_res_changed)
         self.scale.connect("changed", lambda _c: self._show_logical())
+
+    def _on_res_changed(self, _combo):
+        """Carry the current refresh + scale over to the new resolution.
+
+        Reads the selections BEFORE _sync() repopulates the combos. Passing
+        nothing here is what made picking a resolution snap refresh to the
+        highest offered (120 -> 240 silently).
+        """
+        keep_hz = self._rates[self.rate.get_active()] if 0 <= self.rate.get_active() < len(self._rates) else None
+        keep_scale = self.selected_scale()
+        self._sync(keep_hz, keep_scale)
 
         if is_virtual(m):
             note = Gtk.Label(xalign=0)
@@ -223,8 +236,13 @@ class MonitorRow:
         row.pack_start(widget, True, True, 0)
         return row
 
-    def _sync(self, want_hz=None, want_scale=None):
-        """Repopulate refresh + scale for the selected resolution."""
+    def _sync(self, want_hz=None, want_scale=None, allow_odd=False):
+        """Repopulate refresh + scale for the selected resolution.
+
+        Both depend on resolution (modes expose different rates; valid scales are
+        a function of w*h), and both are carried over as closely as possible so
+        that changing resolution changes only resolution.
+        """
         w, h = self.selected_res()
 
         rates = sorted({hz for mw, mh, hz in self.modes if (mw, mh) == (w, h)}, reverse=True)
@@ -241,9 +259,14 @@ class MonitorRow:
             self.rate.set_active(0)
 
         scales = valid_scales(w, h)
-        # Compositor may sit on a scale our enumeration doesn't produce; keep it
-        # selectable so Apply doesn't silently change it.
-        odd = want_scale is not None and not any(abs(s - want_scale) < 1e-6 for s in scales)
+        # Only at init (allow_odd): the compositor may sit on a scale our
+        # enumeration doesn't produce, and it must stay selectable so Apply
+        # doesn't silently change it. NOT when switching resolution -- a scale
+        # valid for the old mode may be invalid for the new one, and Hyprland
+        # rejects scales that don't divide the mode into whole pixels.
+        odd = allow_odd and want_scale is not None and not any(
+            abs(s - want_scale) < 1e-6 for s in scales
+        )
         if odd:
             scales = scales + [want_scale]
         # Assign before populating: append_text/set_active below fire the combo's
@@ -257,8 +280,10 @@ class MonitorRow:
                 self.scale.append_text(f"{fmt_scale(s)} (current, non-standard)")
             else:
                 self.scale.append_text(f"{fmt_scale(s):<5}  ->  {int(w / s)}x{int(h / s)}")
-            if want_scale is not None and abs(s - want_scale) < 1e-6:
-                self.scale.set_active(i)
+        if want_scale is not None and scales:
+            # Nearest, as with refresh. scale = 1 is always in the list (120
+            # always divides gcd(120w, 120h)), so this never lands on nothing.
+            self.scale.set_active(min(range(len(scales)), key=lambda i: abs(scales[i] - want_scale)))
         if self.scale.get_active() < 0:
             self.scale.set_active(0)
 
