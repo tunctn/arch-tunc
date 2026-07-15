@@ -5,7 +5,7 @@
   "tipsHistory": {
     "artifact-publish-plan": 9,
     "auto-copy-config-hint": 2,
-    "new-user-warmup": 2,
+    "new-user-warmup": 9,
     "default-permission-mode-config": 2,
     "agents-view-multiclauding": 3,
     "memory-command": 3,
@@ -890,7 +890,7 @@
   "tipLifetimeShownCounts": {
     "artifact-publish-plan": 2,
     "auto-copy-config-hint": 1,
-    "new-user-warmup": 1,
+    "new-user-warmup": 2,
     "default-permission-mode-config": 1,
     "agents-view-multiclauding": 1,
     "memory-command": 1,
