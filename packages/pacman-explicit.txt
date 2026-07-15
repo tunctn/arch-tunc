@@ -1,3 +1,4 @@
+baloo
 base
 base-devel
 bluez
@@ -16,7 +17,9 @@ htop
 hyprland
 hyprlauncher
 hyprpolkitagent
+incus
 intel-ucode
+jq
 kitty
 libpulse
 libva-nvidia-driver
