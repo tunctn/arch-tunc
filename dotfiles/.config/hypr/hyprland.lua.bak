@@ -86,12 +86,6 @@ hl.env("LIBVA_DRIVER_NAME", "nvidia")
 hl.env("__GLX_VENDOR_LIBRARY_NAME","nvidia")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT","auto")
 
--- Steam is XWayland-only and cannot do fractional scaling itself, so with
--- force_zero_scaling below it would render at 1x and come out tiny. This makes
--- Steam draw its own UI at native pixels instead. Must match the monitor scale
--- set in display.lua -- update both together if you change scale.
-hl.env("STEAM_FORCE_DESKTOPUI_SCALING", "1.5")
-
 
 -----------------------
 ----- PERMISSIONS -----
@@ -105,16 +99,6 @@ hl.config({
   cursor = {
     no_hardware_cursors = true,
   },
-})
-
--- On a fractionally scaled display (1.5 here) Hyprland renders XWayland apps at
--- 1x and upscales them, which is what makes Steam blurry. This makes XWayland
--- render at native resolution instead. Trade-off: every XWayland app now draws
--- at 1x and looks small unless it scales itself (see STEAM_FORCE_DESKTOPUI_SCALING).
-hl.config({
-    xwayland = {
-        force_zero_scaling = true,
-    },
 })
 
 -- hl.permission("/usr/(bin|local/bin)/grim", "screencopy", "allow")
@@ -398,31 +382,6 @@ hl.window_rule({
 
     move  = "20 monitor_h-120",
     float = true,
-})
-
-
----------------
----- STEAM ----
----------------
-
--- Steam's dropdowns/context menus are separate XWayland windows with class
--- "steam" and an EMPTY title. Hyprland focuses them on open, Steam sees the
--- parent lose focus and closes the menu instantly -- so the menu never responds.
--- Keeping focus pinned to the parent is what makes them clickable.
-hl.window_rule({
-    name  = "steam-menus-stayfocused",
-    match = { class = "^steam$", title = "^$" },
-
-    stay_focused = true,
-})
-
--- Steam spawns some menus at a degenerate size before laying them out; without
--- a floor they can appear as an unclickable sliver.
-hl.window_rule({
-    name  = "steam-menus-minsize",
-    match = { class = "^steam$", title = "^$" },
-
-    min_size = "1 1",
 })
 
 
