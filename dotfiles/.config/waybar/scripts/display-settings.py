@@ -228,30 +228,39 @@ class MonitorRow:
         w, h = self.selected_res()
 
         rates = sorted({hz for mw, mh, hz in self.modes if (mw, mh) == (w, h)}, reverse=True)
+        self._rates = rates  # assign before populating; see the scale block below
         self.rate.remove_all()
-        for i, hz in enumerate(rates):
+        for hz in rates:
             self.rate.append_text(f"{hz:g} Hz")
-            if want_hz is not None and abs(hz - want_hz) < 0.01:
-                self.rate.set_active(i)
+        if want_hz is not None and rates:
+            # Nearest, not highest: picking a resolution must never silently
+            # change refresh (120 -> 240 would quietly desync the Moonlight
+            # client). Exact match wins; otherwise land as close as we can.
+            self.rate.set_active(min(range(len(rates)), key=lambda i: abs(rates[i] - want_hz)))
         if self.rate.get_active() < 0:
             self.rate.set_active(0)
-        self._rates = rates
 
         scales = valid_scales(w, h)
+        # Compositor may sit on a scale our enumeration doesn't produce; keep it
+        # selectable so Apply doesn't silently change it.
+        odd = want_scale is not None and not any(abs(s - want_scale) < 1e-6 for s in scales)
+        if odd:
+            scales = scales + [want_scale]
+        # Assign before populating: append_text/set_active below fire the combo's
+        # "changed" handler, which reads self._scales. Assigning afterwards would
+        # let it read the previous resolution's list.
+        self._scales = scales
+
         self.scale.remove_all()
         for i, s in enumerate(scales):
-            self.scale.append_text(f"{fmt_scale(s):<5}  ->  {int(w / s)}x{int(h / s)}")
+            if odd and i == len(scales) - 1:
+                self.scale.append_text(f"{fmt_scale(s)} (current, non-standard)")
+            else:
+                self.scale.append_text(f"{fmt_scale(s):<5}  ->  {int(w / s)}x{int(h / s)}")
             if want_scale is not None and abs(s - want_scale) < 1e-6:
                 self.scale.set_active(i)
-        if want_scale is not None and not any(abs(s - want_scale) < 1e-6 for s in scales):
-            # Compositor is on a scale our enumeration doesn't produce; keep it
-            # selectable so Apply doesn't silently change it.
-            self.scale.append_text(f"{fmt_scale(want_scale)} (current, non-standard)")
-            scales = scales + [want_scale]
-            self.scale.set_active(len(scales) - 1)
         if self.scale.get_active() < 0:
             self.scale.set_active(0)
-        self._scales = scales
 
         self._show_logical()
 
