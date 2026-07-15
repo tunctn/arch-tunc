@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Display settings panel for Hyprland, opened from the Waybar top bar.
 
-Changes are applied live with `hyprctl keyword`, verified against what the
+Changes are applied live with `hyprctl eval` (this Hyprland is configured in Lua,
+and its non-legacy parser refuses `hyprctl keyword`), verified against what the
 compositor actually reports, and only then persisted to ~/.config/hypr/display.lua
 (which hyprland.lua requires last, so these values win).
 """
@@ -14,7 +15,14 @@ from math import gcd
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk  # noqa: E402
+from gi.repository import GLib, Gtk  # noqa: E402
+
+APP_ID = "dev.tunc.hypr-display-settings"
+
+# GTK3 takes the Wayland app_id from the program name, NOT from Gtk.Application's
+# application_id -- without this the class would be "display-settings.py" and the
+# float rule in hyprland.lua would not match.
+GLib.set_prgname(APP_ID)
 
 HYPR_DIR = os.path.expanduser("~/.config/hypr")
 GEN_LUA = os.path.join(HYPR_DIR, "display.lua")
@@ -229,7 +237,7 @@ class Panel(Gtk.ApplicationWindow):
 
         if failed:
             self.status.set_markup(
-                '<span foreground="#cc0000">' + GLib_escape("; ".join(failed)) + "</span>"
+                '<span foreground="#cc0000">' + GLib.markup_escape_text("; ".join(failed)) + "</span>"
             )
         else:
             self.status.set_markup('<span foreground="#26a65b">Applied and saved.</span>')
@@ -244,18 +252,12 @@ class Panel(Gtk.ApplicationWindow):
                 '<span foreground="#26a65b">Reset to hyprland.lua. Reopen to see values.</span>'
             )
         else:
-            self.status.set_markup('<span foreground="#cc0000">' + GLib_escape(out) + "</span>")
-
-
-def GLib_escape(s):
-    from gi.repository import GLib
-
-    return GLib.markup_escape_text(s)
+            self.status.set_markup('<span foreground="#cc0000">' + GLib.markup_escape_text(out) + "</span>")
 
 
 class App(Gtk.Application):
     def __init__(self):
-        super().__init__(application_id="dev.tunc.hypr-display-settings")
+        super().__init__(application_id=APP_ID)
 
     def do_activate(self):
         win = Panel(self)
