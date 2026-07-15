@@ -6,6 +6,8 @@ cliphist
 cups
 cups-pk-helper
 docker
+docker-buildx
+docker-compose
 dolphin
 dunst
 efibootmgr
