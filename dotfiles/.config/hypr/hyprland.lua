@@ -108,8 +108,9 @@ hl.config({
 
 -- On a fractionally scaled display (1.5 here) Hyprland renders XWayland apps at
 -- 1x and upscales them, which is what makes Steam blurry. This makes XWayland
--- render at native resolution instead. Trade-off: every XWayland app now draws
--- at 1x and looks small unless it scales itself (see STEAM_FORCE_DESKTOPUI_SCALING).
+-- render at native resolution instead, so it stays sharp. Trade-off: every
+-- XWayland app now draws at 1x and looks small unless it scales itself
+-- (for Steam: Settings > Accessibility > UI scale).
 hl.config({
     xwayland = {
         force_zero_scaling = true,
