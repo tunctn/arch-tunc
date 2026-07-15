@@ -32,7 +32,8 @@
     "permissions": 11,
     "rename-conversation": 11,
     "frontend-design-plugin": 11,
-    "custom-commands": 12
+    "custom-commands": 12,
+    "voice-mode": 12
   },
   "promptQueueUseCount": 9,
   "cachedGrowthBookFeatures": {
@@ -914,7 +915,8 @@
     "permissions": 1,
     "rename-conversation": 1,
     "frontend-design-plugin": 1,
-    "custom-commands": 1
+    "custom-commands": 1,
+    "voice-mode": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1784107075518
