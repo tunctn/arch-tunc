@@ -383,3 +383,22 @@ hl.window_rule({
     move  = "20 monitor_h-120",
     float = true,
 })
+
+
+------------------------------
+---- DISPLAY SETTINGS PANEL --
+------------------------------
+
+-- Opened from the Waybar top bar (the monitor icon). Keep it floating.
+hl.window_rule({
+    name  = "float-display-settings",
+    match = { class = "dev.tunc.hypr-display-settings" },
+
+    float  = true,
+    center = true,
+})
+
+-- Scale / cursor size picked in that panel live here. Required LAST so these
+-- values override the monitor blocks near the top of this file.
+-- pcall: the file does not exist until the panel's first Apply.
+pcall(require, "display")
