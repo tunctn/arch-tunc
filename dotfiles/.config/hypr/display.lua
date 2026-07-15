@@ -2,8 +2,8 @@
 -- Manual edits here are overwritten. hyprland.lua requires this file last,
 -- so these values override the monitor blocks defined above it.
 
-hl.monitor({ output = "HEADLESS-2", mode = "3840x2160@120.00", position = "auto", scale = 1.5 })
+hl.monitor({ output = "HEADLESS-2", mode = "3840x2160@120.00", position = "auto", scale = 1.6 })
 
 -- Cursor size only affects apps launched after a Hyprland restart.
-hl.env("XCURSOR_SIZE", "32")
-hl.env("HYPRCURSOR_SIZE", "32")
+hl.env("XCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_SIZE", "24")
