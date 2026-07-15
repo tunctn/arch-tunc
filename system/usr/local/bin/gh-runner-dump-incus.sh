@@ -54,4 +54,7 @@ done
 # publish atomically-ish: replace the whole set, drop files for deleted objects
 find "$OUT" -maxdepth 1 -type f \( -name '*.yaml' -o -name 'summary.txt' \) -delete
 cp -a "$tmp"/. "$OUT"/
+# cp -a copies mktemp's 0700 onto $OUT — force it back, or the unprivileged
+# sync can't read the dir and silently backs up nothing.
+chmod 755 "$OUT"
 chmod 644 "$OUT"/* 2>/dev/null || true

@@ -1,0 +1,11 @@
+config:
+  source: /home/incus/default
+description: ""
+name: default
+driver: dir
+used_by:
+  - /1.0/instances/ci
+  - /1.0/profiles/default
+status: Created
+locations:
+  - none

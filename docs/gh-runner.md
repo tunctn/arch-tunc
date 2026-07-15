@@ -98,11 +98,31 @@ repo-scoped token — not a classic org-wide one.
 
 ### 2. Recreate the `ci` container
 
+The authoritative values are in `system/var/lib/gh-runner-backup/*.yaml`, dumped
+straight from the running host — prefer those over the commands below if they
+ever disagree.
+
+**Create the storage pool first.** Root is only 49 GB; `/home` is 866 GB. The
+pool must point at `/home`, or CI images will fill the root disk and break the
+machine:
+
 ```bash
-incus launch images:archlinux/current ci      # any modern distro works
+incus storage create default dir source=/home/incus/default
+```
+
+Then the container. `security.nesting=true` is **required** — Docker cannot run
+inside the container without it:
+
+```bash
+incus launch images:ubuntu/noble ci \
+  -c security.nesting=true \
+  -c limits.cpu=16 \
+  -c limits.memory=20GiB \
+  -c boot.autostart=true
 incus exec ci -- useradd -m -s /bin/bash gh-runner
 incus exec ci -- mkdir -p /opt/actions-runner/dist
-# download the runner tarball into /opt/actions-runner/dist and extract it:
+# download the runner tarball into /opt/actions-runner/dist and extract it
+# (installdependencies.sh below is Debian/Ubuntu-specific — matches images:ubuntu/noble):
 incus exec ci -- bash -c '
   cd /opt/actions-runner/dist &&
   curl -sfLo r.tar.gz https://github.com/actions/runner/releases/download/v2.335.1/actions-runner-linux-x64-2.335.1.tar.gz &&

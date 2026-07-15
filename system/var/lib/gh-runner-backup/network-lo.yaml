@@ -1,0 +1,9 @@
+config: {}
+description: ""
+name: lo
+type: loopback
+used_by: []
+managed: false
+status: ""
+locations: []
+project: default
