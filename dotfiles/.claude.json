@@ -779,50 +779,25 @@
       "hasClaudeMdExternalIncludesApproved": false,
       "hasClaudeMdExternalIncludesWarningShown": false,
       "exampleFiles": [],
-      "lastGracefulShutdown": false,
+      "lastGracefulShutdown": true,
       "lastVersionBase": "2.1.210",
-      "lastCost": 1.1054364999999997,
-      "lastAPIDuration": 184899,
-      "lastAPIDurationWithoutRetries": 184853,
-      "lastToolDuration": 4012,
-      "lastDuration": 119075045,
-      "lastStartTime": 1783976860468,
-      "lastLinesAdded": 16,
-      "lastLinesRemoved": 1,
-      "lastTotalInputTokens": 2086,
-      "lastTotalOutputTokens": 9812,
-      "lastTotalCacheCreationInputTokens": 36862,
-      "lastTotalCacheReadInputTokens": 966885,
+      "lastCost": 0,
+      "lastAPIDuration": 0,
+      "lastAPIDurationWithoutRetries": 0,
+      "lastToolDuration": 0,
+      "lastDuration": 1745103,
+      "lastStartTime": 1784095942112,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 0,
+      "lastTotalOutputTokens": 0,
+      "lastTotalCacheCreationInputTokens": 0,
+      "lastTotalCacheReadInputTokens": 0,
       "lastTotalWebSearchRequests": 0,
-      "lastFpsAverage": 2.66,
-      "lastFpsLow1Pct": 224.25,
-      "lastModelUsage": {
-        "claude-haiku-4-5-20251001": {
-          "inputTokens": 524,
-          "outputTokens": 13,
-          "cacheReadInputTokens": 0,
-          "cacheCreationInputTokens": 0,
-          "webSearchRequests": 0,
-          "costUSD": 0.000589
-        },
-        "claude-opus-4-8[1m]": {
-          "inputTokens": 539,
-          "outputTokens": 7729,
-          "cacheReadInputTokens": 600217,
-          "cacheCreationInputTokens": 15000,
-          "webSearchRequests": 0,
-          "costUSD": 0.6460284999999999
-        },
-        "claude-opus-4-8": {
-          "inputTokens": 1023,
-          "outputTokens": 2070,
-          "cacheReadInputTokens": 366668,
-          "cacheCreationInputTokens": 21862,
-          "webSearchRequests": 0,
-          "costUSD": 0.4588189999999999
-        }
-      },
-      "lastSessionId": "292f0ee1-b4eb-431f-9b56-00bb768b70e0"
+      "lastFpsAverage": 0.01,
+      "lastFpsLow1Pct": 129.29,
+      "lastModelUsage": {},
+      "lastSessionId": "93f4c558-eafc-4804-b220-9b0aac6b1932"
     }
   },
   "announcementImpressions": {
