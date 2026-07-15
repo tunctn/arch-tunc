@@ -5,6 +5,7 @@ bluez-utils
 cliphist
 cups
 cups-pk-helper
+docker
 dolphin
 dunst
 efibootmgr
