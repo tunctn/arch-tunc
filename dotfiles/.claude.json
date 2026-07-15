@@ -29,7 +29,8 @@
     "workflow-size-prompting-ambient": 9,
     "guest-passes": 9,
     "feedback-command": 9,
-    "permissions": 11
+    "permissions": 11,
+    "rename-conversation": 11
   },
   "promptQueueUseCount": 7,
   "cachedGrowthBookFeatures": {
@@ -908,7 +909,8 @@
     "workflow-size-prompting-ambient": 1,
     "guest-passes": 1,
     "feedback-command": 1,
-    "permissions": 1
+    "permissions": 1,
+    "rename-conversation": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1784107075518
