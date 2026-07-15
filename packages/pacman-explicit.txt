@@ -12,6 +12,8 @@ dolphin
 dunst
 efibootmgr
 firefox
+gamemode
+gamescope
 git
 grim
 gst-plugin-pipewire
@@ -23,12 +25,18 @@ incus
 intel-ucode
 jq
 kitty
+lib32-gamemode
+lib32-mangohud
+lib32-mesa
+lib32-nvidia-utils
+lib32-vulkan-icd-loader
 libpulse
 libva-nvidia-driver
 linux
 linux-firmware
 lvm2
 mako
+mangohud
 mkinitcpio
 nano
 networkmanager
@@ -48,6 +56,7 @@ sddm
 slurp
 smartmontools
 sof-firmware
+steam
 sudo
 system-config-printer
 tailscale
@@ -56,6 +65,7 @@ ttf-liberation
 ufw
 uwsm
 vim
+vulkan-tools
 waybar
 wget
 wireplumber
