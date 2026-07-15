@@ -27,7 +27,8 @@
     "remote-control": 7,
     "dynamic-workflows": 9,
     "workflow-size-prompting-ambient": 9,
-    "guest-passes": 9
+    "guest-passes": 9,
+    "feedback-command": 9
   },
   "promptQueueUseCount": 7,
   "cachedGrowthBookFeatures": {
@@ -911,7 +912,8 @@
     "remote-control": 1,
     "dynamic-workflows": 1,
     "workflow-size-prompting-ambient": 1,
-    "guest-passes": 1
+    "guest-passes": 1,
+    "feedback-command": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1783977350749
