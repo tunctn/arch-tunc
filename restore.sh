@@ -30,3 +30,27 @@ if [[ "$ans" =~ ^[Yy]$ ]]; then
 else
     echo ">> Skipped dotfiles."
 fi
+
+# --- system files (root-owned, outside $HOME) ----------------------------
+if [ -d system ] && [ -n "$(find system -type f -not -name 'enabled-gh-runners.txt' -print -quit)" ]; then
+    echo
+    echo ">> This will copy tracked system files as ROOT, OVERWRITING existing files:"
+    ( cd system && find . -type f -not -name 'enabled-gh-runners.txt' | sed 's|^\./|  /|' )
+    read -r -p ">> Continue? [y/N] " ans
+    if [[ "$ans" =~ ^[Yy]$ ]]; then
+        while IFS= read -r f; do
+            rel="${f#system/}"
+            sudo install -D -m "$(stat -c %a "$f")" -o root -g root "$f" "/$rel"
+        done < <(find system -type f -not -name 'enabled-gh-runners.txt')
+        sudo systemctl daemon-reload
+        echo ">> System files restored."
+        echo
+        echo "!! The GitHub Actions runner needs manual steps before it will start."
+        echo "!! See docs/gh-runner.md — in short:"
+        echo "!!   1. create /root/gh-runner.env with GH_PAT=<repo-scoped PAT>  (NOT in this repo)"
+        echo "!!   2. create the 'ci' incus container + gh-runner user + /opt/actions-runner/dist"
+        echo "!!   3. enable the slots listed in system/enabled-gh-runners.txt"
+    else
+        echo ">> Skipped system files."
+    fi
+fi

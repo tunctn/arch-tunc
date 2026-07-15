@@ -11,6 +11,7 @@ id_*
 *.kdbx
 .env
 .env.*
+*.env
 .netrc
 *.token
 *credentials*
