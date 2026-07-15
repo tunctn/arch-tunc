@@ -45,12 +45,12 @@
         "separate-outputs": true
     },
     // Opens the GTK display panel (scale + cursor size).
-    // Clicking again closes it, so the module toggles.
+    // The script itself toggles: clicking again closes an open panel.
     "custom/display": {
         "format": "🖥︎",
         "tooltip": true,
         "tooltip-format": "Display settings (scale, cursor size)",
-        "on-click": "pkill -f 'waybar/scripts/display-settings.py' || $HOME/.config/waybar/scripts/display-settings.py"
+        "on-click": "$HOME/.config/waybar/scripts/display-settings.py"
     },
     "keyboard-state": {
         "numlock": true,

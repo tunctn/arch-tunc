@@ -263,5 +263,42 @@ class App(Gtk.Application):
         win.present()
 
 
+def toggle_guard():
+    """Make the bar button a toggle: a second click closes the open panel.
+
+    Done here rather than with `pkill -f` in the Waybar command, because that
+    pattern also matches the shell running it, so the shell kills itself.
+    Returns True if we should exit (we just closed a running panel).
+    """
+    run_dir = os.environ.get("XDG_RUNTIME_DIR") or "/tmp"
+    pidfile = os.path.join(run_dir, "hypr-display-settings.pid")
+    try:
+        with open(pidfile) as f:
+            old = int(f.read().strip())
+        os.kill(old, 0)  # raises unless that pid is alive
+    except (OSError, ValueError):
+        pass  # stale or absent -> fall through and start
+    else:
+        try:
+            os.kill(old, 15)
+        except OSError:
+            pass
+        os.unlink(pidfile)
+        return True
+
+    with open(pidfile, "w") as f:
+        f.write(str(os.getpid()))
+    return False
+
+
 if __name__ == "__main__":
-    App().run(None)
+    if toggle_guard():
+        raise SystemExit(0)
+    try:
+        App().run(None)
+    finally:
+        run_dir = os.environ.get("XDG_RUNTIME_DIR") or "/tmp"
+        try:
+            os.unlink(os.path.join(run_dir, "hypr-display-settings.pid"))
+        except OSError:
+            pass
