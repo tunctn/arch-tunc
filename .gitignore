@@ -14,3 +14,8 @@ id_*
 .netrc
 *.token
 *credentials*
+
+# Sunshine: web-UI login hash + paired-client certs. Not in the allowlist,
+# but *.pem/*credentials* wouldn't catch this one if it ever got added.
+sunshine_state.json
+sunshine.log

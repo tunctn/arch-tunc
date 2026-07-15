@@ -1,0 +1,17 @@
+# Allowlist of ABSOLUTE system paths to sync (outside $HOME). One per line.
+# Copied into system/<path-without-leading-slash> and pushed to GitHub.
+# Lines starting with # are ignored. Missing/unreadable paths are skipped silently.
+#
+# Files here are owned by root but must be WORLD-READABLE for the user timer to
+# copy them (sync.sh runs as tunc, never sudo). If a file isn't readable it is
+# skipped without failing the sync.
+#
+# SAFETY: never add anything containing secrets here. In particular:
+#   /root/gh-runner.env        <- holds GH_PAT; recreate by hand on restore
+#   /etc/ssh/*_key             <- host private keys
+#   /etc/shadow /etc/sudoers.d <- credentials / privilege
+# See docs/gh-runner.md for what a restore needs beyond these files.
+
+# --- github actions runner (see docs/gh-runner.md) ---
+/etc/systemd/system/gh-runner@.service
+/usr/local/bin/gh-runner-cycle.sh

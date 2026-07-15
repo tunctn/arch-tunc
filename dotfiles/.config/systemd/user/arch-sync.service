@@ -1,0 +1,8 @@
+[Unit]
+Description=Sync Arch setup to arch-tunc repo
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/arch-tunc/sync.sh

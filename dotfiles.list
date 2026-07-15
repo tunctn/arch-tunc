@@ -43,6 +43,23 @@ Pictures/wallpapers
 .zshrc
 .bash_aliases
 
+# --- sunshine (moonlight game-stream host; reached over tailscale) ---
+# Listed FILE-BY-FILE on purpose — do NOT change these to `.config/sunshine`,
+# that would sweep in the secrets below.
+# NOT listed on purpose:
+#   .config/sunshine/credentials/     -> web-UI TLS CA + private key (cakey.pem)
+#   .config/sunshine/sunshine_state.json -> web-UI login salt+password hash and
+#                                        the certs of every paired client
+#   .config/sunshine/sunshine.log     -> noise, regenerated on every run
+# After a restore: re-pair clients and re-set the web-UI login at
+# https://<tailscale-ip>:47990 — that state is intentionally not portable.
+.config/sunshine/sunshine.conf
+.config/sunshine/apps.json
+
+# --- systemd user units (sunshine autostart + this repo's own sync timer) ---
+# Includes the *.wants/ enablement symlinks, so services come back enabled.
+.config/systemd/user
+
 # --- claude code (config + chat history ONLY; secrets deliberately excluded) ---
 # NOT listed on purpose: .claude/.credentials.json (OAuth token),
 # .claude/sessions, .claude/session-env, .claude/shell-snapshots (env/secrets),

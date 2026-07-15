@@ -1,0 +1,14 @@
+[Unit]
+Description=Ephemeral GitHub Actions runner for wusthq/%i
+After=network-online.target incus.service
+Wants=network-online.target
+Requires=incus.service
+
+[Service]
+ExecStart=/usr/local/bin/gh-runner-cycle.sh %i
+ExecStopPost=-/usr/bin/incus exec ci -- bash -c 'pkill -f "repo-$(echo "%i" | sed "s/:\\(.*\\)$/-\\1/")/bin/Runner.Listener"'
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
