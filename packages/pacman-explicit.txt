@@ -62,4 +62,5 @@ wpaperd
 wpa_supplicant
 xdg-desktop-portal-hyprland
 xdg-utils
+xorg-xrandr
 zram-generator
