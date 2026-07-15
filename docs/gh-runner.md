@@ -68,15 +68,33 @@ runs-on: [self-hosted, tunc-arch]
 | `system/etc/systemd/system/gh-runner@.service` | the template unit |
 | `system/usr/local/bin/gh-runner-cycle.sh` | the per-cycle driver |
 | `system/enabled-gh-runners.txt` | which slots are enabled (= parallelism) |
-| `system.list` | allowlist that drives the two above into the repo |
+| `system/var/lib/gh-runner-backup/*.yaml` | incus container/storage/profile/network config |
+| `system/var/lib/gh-runner-backup/summary.txt` | disk sizes + storage pools at a glance |
+| `system/usr/local/bin/gh-runner-dump-incus.sh` | writes the YAML above |
+| `system/etc/systemd/system/gh-runner-dump-incus.{service,timer}` | runs the dumper every 10 min |
+| `system.list` | allowlist that drives all of the above into the repo |
 
 `incus` itself is captured in `packages/pacman-explicit.txt`.
+
+### How the incus config gets here
+
+`sync.sh` runs as `tunc`, which deliberately has **no** incus access (the daemon
+socket is root-equivalent — it can bind-mount any host path into a container).
+So a root timer dumps the config to world-readable YAML in
+`/var/lib/gh-runner-backup`, and the unprivileged sync just copies the result.
+The user gains read-only visibility, never control.
+
+`volatile.*` keys are stripped from the dump: incus regenerates them on every
+start, they are useless for a restore, and they would churn a commit every
+10 minutes.
 
 ## NOT tracked, by design
 
 - **`/root/gh-runner.env`** — holds `GH_PAT`. A secret; never add it to
   `system.list`. Also unreadable by the sync (which runs as `tunc`, not root).
-- **The `ci` container** — a multi-GB rootfs, not a config file. Recreate it.
+- **The `ci` container rootfs** — multi-GB, not a config file. Recreate it from
+  the tracked YAML using the steps below. Its *config* is tracked; its *contents*
+  are not, so anything installed inside (docker, node, …) must be reinstalled.
 
 ## Manual restore steps
 
