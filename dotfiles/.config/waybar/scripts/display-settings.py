@@ -5,10 +5,16 @@ Changes are applied live with `hyprctl eval` (this Hyprland is configured in Lua
 and its non-legacy parser refuses `hyprctl keyword`), verified against what the
 compositor actually reports, and only then persisted to ~/.config/hypr/display.lua
 (which hyprland.lua requires last, so these values win).
+
+Resolution changes on a headless box are risky: the only way in is the Sunshine
+stream, and a mode the client can't handle locks you out. So a mode/scale change
+must be confirmed within REVERT_SECONDS or it is rolled back automatically -- if
+the stream dies, doing nothing restores the previous mode.
 """
 
 import json
 import os
+import re
 import subprocess
 import time
 from math import gcd
@@ -31,6 +37,24 @@ CURSOR_THEME = os.environ.get("XCURSOR_THEME") or "default"
 
 SCALE_MIN, SCALE_MAX = 1.0, 3.0
 CURSOR_MIN, CURSOR_MAX = 12, 96
+REVERT_SECONDS = 15
+
+# Virtual outputs accept essentially any mode, and hyprctl's availableModes for
+# them is NOT authoritative: HEADLESS-2 reports only 1920x1080@60 while happily
+# running 2560x1440@120. Driving the dropdown off that list would offer exactly
+# one wrong choice, so virtual outputs get this curated list instead. Physical
+# outputs keep using the modes the display actually advertises.
+PRESET_RES = [
+    (1280, 720),
+    (1600, 900),
+    (1920, 1080),
+    (2560, 1440),
+    (3440, 1440),
+    (3840, 2160),
+]
+PRESET_RATES = [60.0, 90.0, 120.0, 144.0, 165.0, 240.0]
+
+MODE_RE = re.compile(r"^(\d+)x(\d+)@([\d.]+)Hz$")
 
 
 def hyprctl(*args):
@@ -65,6 +89,35 @@ def monitors():
         return []
 
 
+def is_virtual(m):
+    return m["name"].upper().startswith("HEADLESS")
+
+
+def available_modes(m):
+    """(w, h, hz) tuples offerable for this monitor, best first.
+
+    The live mode is always included: for a virtual output it is usually absent
+    from availableModes, and it must stay selectable so "Apply" without touching
+    resolution is a no-op rather than a surprise mode change.
+    """
+    if is_virtual(m):
+        modes = [(w, h, r) for (w, h) in PRESET_RES for r in PRESET_RATES]
+    else:
+        modes = []
+        for s in m.get("availableModes", []):
+            hit = MODE_RE.match(s)
+            if hit:
+                modes.append((int(hit.group(1)), int(hit.group(2)), float(hit.group(3))))
+
+    modes.append(current_mode(m))
+    # dedupe, then widest -> highest refresh
+    return sorted(set(modes), key=lambda t: (-(t[0] * t[1]), -t[2]))
+
+
+def current_mode(m):
+    return (m["width"], m["height"], round(float(m["refreshRate"]), 2))
+
+
 def valid_scales(w, h):
     """Scales Hyprland will accept for a w*h panel.
 
@@ -77,8 +130,8 @@ def valid_scales(w, h):
     return [n / 120 for n in range(lo, hi + 1) if g % n == 0]
 
 
-def mode_of(m):
-    return f"{m['width']}x{m['height']}@{m['refreshRate']:.2f}"
+def fmt_mode(w, h, hz):
+    return f"{w}x{h}@{hz:.2f}"
 
 
 def fmt_scale(s):
@@ -108,18 +161,136 @@ def write_lua(rows, cursor_size):
     os.replace(tmp, GEN_LUA)
 
 
+class MonitorRow:
+    """Resolution / refresh / scale selectors for one monitor.
+
+    Refresh and scale both depend on the chosen resolution (different modes
+    expose different rates; valid scales are a function of w*h), so both are
+    repopulated whenever resolution changes.
+    """
+
+    def __init__(self, m):
+        self.mon = m
+        self.modes = available_modes(m)
+        self.prev = (fmt_mode(*current_mode(m)), round(float(m["scale"]), 6))
+
+        cur_w, cur_h, cur_hz = current_mode(m)
+
+        self.frame = Gtk.Frame(label=f"  {m['name']}  ")
+        inner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        inner.set_border_width(10)
+        self.frame.add(inner)
+
+        self.res = Gtk.ComboBoxText()
+        self.resolutions = sorted(
+            {(w, h) for w, h, _ in self.modes}, key=lambda t: -(t[0] * t[1])
+        )
+        for i, (w, h) in enumerate(self.resolutions):
+            self.res.append_text(f"{w} x {h}")
+            if (w, h) == (cur_w, cur_h):
+                self.res.set_active(i)
+
+        self.rate = Gtk.ComboBoxText()
+        self.scale = Gtk.ComboBoxText()
+
+        inner.pack_start(self._labelled("Resolution", self.res), False, False, 0)
+        inner.pack_start(self._labelled("Refresh", self.rate), False, False, 0)
+        inner.pack_start(self._labelled("Scale", self.scale), False, False, 0)
+
+        self.logical = Gtk.Label(xalign=0)
+        inner.pack_start(self.logical, False, False, 0)
+
+        self._sync(cur_hz, round(float(m["scale"]), 6))
+        self.res.connect("changed", lambda _c: self._sync())
+        self.scale.connect("changed", lambda _c: self._show_logical())
+
+        if is_virtual(m):
+            note = Gtk.Label(xalign=0)
+            note.set_markup(
+                "<small>Virtual output: it accepts any mode, so this is a preset "
+                "list rather than what the driver advertises. Match it to your "
+                "Moonlight client for a 1:1 stream.</small>"
+            )
+            note.set_line_wrap(True)
+            inner.pack_start(note, False, False, 0)
+
+    @staticmethod
+    def _labelled(text, widget):
+        row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        lbl = Gtk.Label(label=text, xalign=0)
+        lbl.set_size_request(80, -1)
+        row.pack_start(lbl, False, False, 0)
+        row.pack_start(widget, True, True, 0)
+        return row
+
+    def _sync(self, want_hz=None, want_scale=None):
+        """Repopulate refresh + scale for the selected resolution."""
+        w, h = self.selected_res()
+
+        rates = sorted({hz for mw, mh, hz in self.modes if (mw, mh) == (w, h)}, reverse=True)
+        self.rate.remove_all()
+        for i, hz in enumerate(rates):
+            self.rate.append_text(f"{hz:g} Hz")
+            if want_hz is not None and abs(hz - want_hz) < 0.01:
+                self.rate.set_active(i)
+        if self.rate.get_active() < 0:
+            self.rate.set_active(0)
+        self._rates = rates
+
+        scales = valid_scales(w, h)
+        self.scale.remove_all()
+        for i, s in enumerate(scales):
+            self.scale.append_text(f"{fmt_scale(s):<5}  ->  {int(w / s)}x{int(h / s)}")
+            if want_scale is not None and abs(s - want_scale) < 1e-6:
+                self.scale.set_active(i)
+        if want_scale is not None and not any(abs(s - want_scale) < 1e-6 for s in scales):
+            # Compositor is on a scale our enumeration doesn't produce; keep it
+            # selectable so Apply doesn't silently change it.
+            self.scale.append_text(f"{fmt_scale(want_scale)} (current, non-standard)")
+            scales = scales + [want_scale]
+            self.scale.set_active(len(scales) - 1)
+        if self.scale.get_active() < 0:
+            self.scale.set_active(0)
+        self._scales = scales
+
+        self._show_logical()
+
+    def _show_logical(self):
+        w, h = self.selected_res()
+        s = self.selected_scale()
+        if s:
+            self.logical.set_markup(
+                f"<small>Desktop renders {w}x{h}; apps see {int(w / s)}x{int(h / s)}."
+                + ("" if s == 1 else "  Scale &gt; 1 makes XWayland apps blurry.")
+                + "</small>"
+            )
+
+    def selected_res(self):
+        return self.resolutions[max(self.res.get_active(), 0)]
+
+    def selected_rate(self):
+        return self._rates[max(self.rate.get_active(), 0)]
+
+    def selected_scale(self):
+        i = self.scale.get_active()
+        return self._scales[i] if 0 <= i < len(self._scales) else None
+
+    def target(self):
+        w, h = self.selected_res()
+        return (self.mon["name"], fmt_mode(w, h, self.selected_rate()), self.selected_scale())
+
+
 class Panel(Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(application=app, title="Display Settings")
-        self.set_default_size(430, -1)
+        self.set_default_size(460, -1)
         self.set_resizable(False)
         self.set_border_width(0)
 
         outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         self.add(outer)
 
-        header = Gtk.HeaderBar(title="Display Settings", show_close_button=True)
-        self.set_titlebar(header)
+        self.set_titlebar(Gtk.HeaderBar(title="Display Settings", show_close_button=True))
 
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=14)
         box.set_border_width(16)
@@ -127,22 +298,20 @@ class Panel(Gtk.ApplicationWindow):
 
         self.rows = []
         mons = monitors()
-
         if not mons:
             box.pack_start(Gtk.Label(label="No monitors reported by hyprctl."), False, False, 0)
         for m in mons:
-            box.pack_start(self._monitor_frame(m), False, False, 0)
+            row = MonitorRow(m)
+            self.rows.append(row)
+            box.pack_start(row.frame, False, False, 0)
 
         box.pack_start(Gtk.Separator(), False, False, 0)
 
-        # --- cursor size ---
         crow = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         clabel = Gtk.Label(label="Cursor size", xalign=0)
-        clabel.set_size_request(90, -1)
+        clabel.set_size_request(80, -1)
         crow.pack_start(clabel, False, False, 0)
-
-        cur = int(os.environ.get("XCURSOR_SIZE") or 24)
-        cur = min(max(cur, CURSOR_MIN), CURSOR_MAX)
+        cur = min(max(int(os.environ.get("XCURSOR_SIZE") or 24), CURSOR_MIN), CURSOR_MAX)
         self.cursor = Gtk.SpinButton.new_with_range(CURSOR_MIN, CURSOR_MAX, 2)
         self.cursor.set_value(cur)
         crow.pack_start(self.cursor, True, True, 0)
@@ -150,18 +319,16 @@ class Panel(Gtk.ApplicationWindow):
 
         note = Gtk.Label(xalign=0)
         note.set_markup(
-            '<small>Scale changes apply instantly. Cursor size applies to apps '
-            'started afterwards.</small>'
+            "<small>Resolution and scale apply instantly and must be confirmed. "
+            "Cursor size applies to apps started afterwards.</small>"
         )
         note.set_line_wrap(True)
         box.pack_start(note, False, False, 0)
 
-        # --- status ---
         self.status = Gtk.Label(xalign=0)
         self.status.set_line_wrap(True)
         box.pack_start(self.status, False, False, 0)
 
-        # --- buttons ---
         btns = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         btns.set_halign(Gtk.Align.END)
         reset = Gtk.Button(label="Reset to config")
@@ -173,89 +340,117 @@ class Panel(Gtk.ApplicationWindow):
         btns.pack_start(apply, False, False, 0)
         box.pack_start(btns, False, False, 0)
 
-    def _monitor_frame(self, m):
-        name, w, h = m["name"], m["width"], m["height"]
-        frame = Gtk.Frame(label=f"  {name} — {w}x{h} @ {m['refreshRate']:.0f}Hz  ")
-        inner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        inner.set_border_width(10)
-        frame.add(inner)
+    def _push(self, name, mode, scale):
+        return hyprctl("eval", monitor_lua(name, mode, scale))
 
-        scales = valid_scales(w, h)
-        combo = Gtk.ComboBoxText()
-        current = round(float(m["scale"]), 6)
-        active = 0
-        for i, s in enumerate(scales):
-            combo.append_text(f"{fmt_scale(s):<6}  →  {int(w/s)}x{int(h/s)}")
-            if abs(s - current) < 1e-6:
-                active = i
-        if not any(abs(s - current) < 1e-6 for s in scales):
-            # Compositor is on a scale outside our enumerated range; show it.
-            combo.append_text(f"{fmt_scale(current)} (current, non-standard)")
-            scales = scales + [current]
-            active = len(scales) - 1
-        combo.set_active(active)
+    def _settled(self, want, timeout=4.0):
+        """Poll until the compositor reports `want`, or give up.
 
-        row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-        lbl = Gtk.Label(label="Scale", xalign=0)
-        lbl.set_size_request(80, -1)
-        row.pack_start(lbl, False, False, 0)
-        row.pack_start(combo, True, True, 0)
-        inner.pack_start(row, False, False, 0)
-
-        self.rows.append({"mon": m, "combo": combo, "scales": scales})
-        return frame
-
-    def on_apply(self, _btn):
-        applied, failed = [], []
-        for r in self.rows:
-            m, idx = r["mon"], r["combo"].get_active()
-            if idx < 0:
-                continue
-            scale = r["scales"][idx]
-            name, mode = m["name"], mode_of(m)
-            # This Hyprland is configured in Lua, so `hyprctl keyword` is refused
-            # ("keyword can't work with non-legacy parsers"). eval runs Lua instead.
-            ok, out = hyprctl("eval", monitor_lua(name, mode, scale))
-            if not ok:
-                failed.append(f"{name}: {out}")
-                continue
-            applied.append((name, mode, scale))
-
-        # Verify the compositor actually took the scale before persisting it.
-        # Hyprland applies a mode/scale change asynchronously, so poll until it
-        # settles rather than reading back immediately (which races and reports
-        # a false rejection).
-        want = {name: scale for name, _mode, scale in applied}
+        Hyprland applies mode/scale asynchronously, so reading back immediately
+        races and reports a false rejection.
+        """
+        deadline = time.monotonic() + timeout
         live = {}
-        deadline = time.monotonic() + 3.0
         while True:
-            live = {m["name"]: round(float(m["scale"]), 6) for m in monitors()}
-            settled = all(
-                n in live and abs(live[n] - s) < 1e-3 for n, s in want.items()
+            live = {
+                m["name"]: (fmt_mode(*current_mode(m)), round(float(m["scale"]), 6))
+                for m in monitors()
+            }
+            ok = all(
+                n in live
+                and live[n][0] == mode
+                and abs(live[n][1] - scale) < 1e-3
+                for n, mode, scale in want
             )
-            if settled or time.monotonic() > deadline:
-                break
+            if ok or time.monotonic() > deadline:
+                return ok, live
             time.sleep(0.1)
 
-        confirmed = []
-        for name, mode, scale in applied:
-            if name in live and abs(live[name] - scale) < 1e-3:
-                confirmed.append((name, mode, scale))
-            else:
-                failed.append(f"{name}: rejected (still at {live.get(name, '?')})")
+    def on_apply(self, _btn):
+        targets = [r.target() for r in self.rows if r.selected_scale()]
+        changed = [t for t, r in zip(targets, self.rows) if (t[1], t[2]) != r.prev]
 
         size = int(self.cursor.get_value())
         hyprctl("setcursor", CURSOR_THEME, str(size))
 
-        if confirmed:
-            write_lua(confirmed, size)
+        if not changed:
+            write_lua(targets, size)
+            self.status.set_markup('<span foreground="#26a65b">Saved.</span>')
+            return
+
+        failed = []
+        for name, mode, scale in changed:
+            ok, out = self._push(name, mode, scale)
+            if not ok:
+                failed.append(f"{name}: {out}")
+
+        ok, live = self._settled([(n, m, s) for n, m, s in changed])
+        if not ok:
+            for name, mode, scale in changed:
+                got = live.get(name)
+                if not got or got[0] != mode or abs(got[1] - scale) > 1e-3:
+                    failed.append(f"{name}: rejected (still at {got[0] if got else '?'})")
 
         if failed:
+            self._revert()
             self.status.set_markup(
-                '<span foreground="#cc0000">' + GLib.markup_escape_text("; ".join(failed)) + "</span>"
+                '<span foreground="#cc0000">'
+                + GLib.markup_escape_text("; ".join(failed))
+                + "</span>"
             )
-        else:
+            return
+
+        if self._confirm():
+            write_lua(targets, size)
+            for r, t in zip(self.rows, targets):
+                r.prev = (t[1], t[2])
             self.status.set_markup('<span foreground="#26a65b">Applied and saved.</span>')
+        else:
+            self._revert()
+            self.status.set_markup("Reverted; nothing saved.")
+
+    def _revert(self):
+        for r in self.rows:
+            mode, scale = r.prev
+            self._push(r.mon["name"], mode, scale)
+
+    def _confirm(self):
+        """Countdown dialog. Doing nothing reverts -- that is the point: if the
+        new mode killed the stream, the user cannot click anything."""
+        dlg = Gtk.MessageDialog(
+            transient_for=self,
+            modal=True,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.NONE,
+            text="Keep these display settings?",
+        )
+        dlg.add_button("Revert", Gtk.ResponseType.CANCEL)
+        keep = dlg.add_button("Keep", Gtk.ResponseType.OK)
+        keep.get_style_context().add_class("suggested-action")
+        dlg.set_default_response(Gtk.ResponseType.CANCEL)
+
+        state = {"n": REVERT_SECONDS, "live": True}
+
+        def label(n):
+            dlg.format_secondary_text(f"Reverting in {n}s if you don't confirm.")
+
+        label(state["n"])
+
+        def tick():
+            state["n"] -= 1
+            if state["n"] <= 0:
+                state["live"] = False
+                dlg.response(Gtk.ResponseType.CANCEL)
+                return False
+            label(state["n"])
+            return True
+
+        src = GLib.timeout_add_seconds(1, tick)
+        resp = dlg.run()
+        if state["live"]:
+            GLib.source_remove(src)
+        dlg.destroy()
+        return resp == Gtk.ResponseType.OK
 
     def on_reset(self, _btn):
         """Drop our overrides and let hyprland.lua's own values take over."""
@@ -267,7 +462,9 @@ class Panel(Gtk.ApplicationWindow):
                 '<span foreground="#26a65b">Reset to hyprland.lua. Reopen to see values.</span>'
             )
         else:
-            self.status.set_markup('<span foreground="#cc0000">' + GLib.markup_escape_text(out) + "</span>")
+            self.status.set_markup(
+                '<span foreground="#cc0000">' + GLib.markup_escape_text(out) + "</span>"
+            )
 
 
 class App(Gtk.Application):
