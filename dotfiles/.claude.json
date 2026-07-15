@@ -25,7 +25,8 @@
     "web-app": 5,
     "custom-agents": 6,
     "remote-control": 7,
-    "dynamic-workflows": 9
+    "dynamic-workflows": 9,
+    "workflow-size-prompting-ambient": 9
   },
   "promptQueueUseCount": 7,
   "cachedGrowthBookFeatures": {
@@ -907,7 +908,8 @@
     "web-app": 1,
     "custom-agents": 1,
     "remote-control": 1,
-    "dynamic-workflows": 1
+    "dynamic-workflows": 1,
+    "workflow-size-prompting-ambient": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1783977350749
