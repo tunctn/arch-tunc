@@ -4,7 +4,7 @@
   "autoUpdates": false,
   "tipsHistory": {
     "artifact-publish-plan": 9,
-    "auto-copy-config-hint": 2,
+    "auto-copy-config-hint": 12,
     "new-user-warmup": 9,
     "default-permission-mode-config": 2,
     "agents-view-multiclauding": 3,
@@ -31,7 +31,8 @@
     "feedback-command": 9,
     "permissions": 11,
     "rename-conversation": 11,
-    "frontend-design-plugin": 11
+    "frontend-design-plugin": 11,
+    "custom-commands": 12
   },
   "promptQueueUseCount": 7,
   "cachedGrowthBookFeatures": {
@@ -888,11 +889,11 @@
   "hasVisitedPasses": false,
   "passesLastSeenRemaining": 3,
   "closedIssuesLastChecked": 1784095930818,
-  "lastPlanModeUse": 1784117742474,
+  "lastPlanModeUse": 1784120200790,
   "hasSeenAutoModeEntryWarning": true,
   "tipLifetimeShownCounts": {
     "artifact-publish-plan": 2,
-    "auto-copy-config-hint": 1,
+    "auto-copy-config-hint": 2,
     "new-user-warmup": 2,
     "default-permission-mode-config": 1,
     "agents-view-multiclauding": 1,
@@ -919,7 +920,8 @@
     "feedback-command": 1,
     "permissions": 1,
     "rename-conversation": 1,
-    "frontend-design-plugin": 1
+    "frontend-design-plugin": 1,
+    "custom-commands": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1784107075518
