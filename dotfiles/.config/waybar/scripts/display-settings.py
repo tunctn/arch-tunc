@@ -206,6 +206,16 @@ class MonitorRow:
         self.res.connect("changed", self._on_res_changed)
         self.scale.connect("changed", lambda _c: self._show_logical())
 
+        if is_virtual(m):
+            note = Gtk.Label(xalign=0)
+            note.set_markup(
+                "<small>Virtual output: it accepts any mode, so this is a preset "
+                "list rather than what the driver advertises. Match it to your "
+                "Moonlight client for a 1:1 stream.</small>"
+            )
+            note.set_line_wrap(True)
+            inner.pack_start(note, False, False, 0)
+
     def _on_res_changed(self, _combo):
         """Carry the current refresh + scale over to the new resolution.
 
@@ -216,16 +226,6 @@ class MonitorRow:
         keep_hz = self._rates[self.rate.get_active()] if 0 <= self.rate.get_active() < len(self._rates) else None
         keep_scale = self.selected_scale()
         self._sync(keep_hz, keep_scale)
-
-        if is_virtual(m):
-            note = Gtk.Label(xalign=0)
-            note.set_markup(
-                "<small>Virtual output: it accepts any mode, so this is a preset "
-                "list rather than what the driver advertises. Match it to your "
-                "Moonlight client for a 1:1 stream.</small>"
-            )
-            note.set_line_wrap(True)
-            inner.pack_start(note, False, False, 0)
 
     @staticmethod
     def _labelled(text, widget):
