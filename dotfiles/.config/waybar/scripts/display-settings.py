@@ -10,6 +10,7 @@ compositor actually reports, and only then persisted to ~/.config/hypr/display.l
 import json
 import os
 import subprocess
+import time
 from math import gcd
 
 import gi
@@ -221,7 +222,21 @@ class Panel(Gtk.ApplicationWindow):
             applied.append((name, mode, scale))
 
         # Verify the compositor actually took the scale before persisting it.
-        live = {m["name"]: round(float(m["scale"]), 6) for m in monitors()}
+        # Hyprland applies a mode/scale change asynchronously, so poll until it
+        # settles rather than reading back immediately (which races and reports
+        # a false rejection).
+        want = {name: scale for name, _mode, scale in applied}
+        live = {}
+        deadline = time.monotonic() + 3.0
+        while True:
+            live = {m["name"]: round(float(m["scale"]), 6) for m in monitors()}
+            settled = all(
+                n in live and abs(live[n] - s) < 1e-3 for n, s in want.items()
+            )
+            if settled or time.monotonic() > deadline:
+                break
+            time.sleep(0.1)
+
         confirmed = []
         for name, mode, scale in applied:
             if name in live and abs(live[name] - scale) < 1e-3:
