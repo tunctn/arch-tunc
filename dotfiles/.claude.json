@@ -24,7 +24,8 @@
     "image-paste": 5,
     "web-app": 5,
     "custom-agents": 6,
-    "remote-control": 7
+    "remote-control": 7,
+    "dynamic-workflows": 9
   },
   "promptQueueUseCount": 7,
   "cachedGrowthBookFeatures": {
@@ -905,7 +906,8 @@
     "image-paste": 1,
     "web-app": 1,
     "custom-agents": 1,
-    "remote-control": 1
+    "remote-control": 1,
+    "dynamic-workflows": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1783977350749
