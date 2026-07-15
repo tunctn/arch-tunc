@@ -2,6 +2,9 @@
 # ~/.bashrc
 #
 
+# ~/.local/bin for non-interactive ssh commands too (e.g. ssh arch wake-nyra)
+export PATH="$HOME/.local/bin:$PATH"
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
