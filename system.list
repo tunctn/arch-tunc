@@ -15,3 +15,13 @@
 # --- github actions runner (see docs/gh-runner.md) ---
 /etc/systemd/system/gh-runner@.service
 /usr/local/bin/gh-runner-cycle.sh
+
+# --- incus CI config snapshot ---
+# sync.sh runs as tunc and cannot talk to the incus daemon, so a root timer
+# (gh-runner-dump-incus.timer) dumps the config here as world-readable YAML and
+# we just copy the result. This is what records that CI storage lives on /home
+# rather than the small root disk.
+/usr/local/bin/gh-runner-dump-incus.sh
+/etc/systemd/system/gh-runner-dump-incus.service
+/etc/systemd/system/gh-runner-dump-incus.timer
+/var/lib/gh-runner-backup
