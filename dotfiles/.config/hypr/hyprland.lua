@@ -39,7 +39,10 @@ hl.monitor({
     output   = "DP-2",
     mode     = "3840x2160@160",
     position = "auto",
-    scale    = 1.0,
+    -- 1.25 => 3072x1728 logical. Must divide 3840x2160 into whole pixels;
+    -- 1.24 is silently snapped up to 1.25, so state it explicitly.
+    -- Only other nearby valid value is 1.2 (=> 3200x1800).
+    scale    = 1.25,
 })
 
 
