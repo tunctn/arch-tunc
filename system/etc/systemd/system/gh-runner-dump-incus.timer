@@ -1,0 +1,10 @@
+[Unit]
+Description=Periodically dump incus CI config for the arch-tunc backup
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=10min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

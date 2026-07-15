@@ -1,0 +1,8 @@
+[Unit]
+Description=Dump incus CI config for the arch-tunc backup
+After=incus.service
+Requires=incus.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/gh-runner-dump-incus.sh
