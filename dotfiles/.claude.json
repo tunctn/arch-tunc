@@ -30,7 +30,8 @@
     "guest-passes": 9,
     "feedback-command": 9,
     "permissions": 11,
-    "rename-conversation": 11
+    "rename-conversation": 11,
+    "frontend-design-plugin": 11
   },
   "promptQueueUseCount": 7,
   "cachedGrowthBookFeatures": {
@@ -910,7 +911,8 @@
     "guest-passes": 1,
     "feedback-command": 1,
     "permissions": 1,
-    "rename-conversation": 1
+    "rename-conversation": 1,
+    "frontend-design-plugin": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1784107075518
