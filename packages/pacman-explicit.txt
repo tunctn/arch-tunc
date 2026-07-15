@@ -45,6 +45,7 @@ smartmontools
 sof-firmware
 sudo
 system-config-printer
+tailscale
 ttf-dejavu
 ttf-liberation
 ufw
