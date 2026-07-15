@@ -106,16 +106,15 @@ hl.config({
   },
 })
 
--- On a fractionally scaled display (1.5 here) Hyprland renders XWayland apps at
--- 1x and upscales them, which is what makes Steam blurry. This makes XWayland
--- render at native resolution instead, so it stays sharp. Trade-off: every
--- XWayland app now draws at 1x and looks small unless it scales itself
--- (for Steam: Settings > Accessibility > UI scale).
-hl.config({
-    xwayland = {
-        force_zero_scaling = true,
-    },
-})
+-- NOTE ON XWAYLAND + SCALING (see also display.lua): HEADLESS-2 is a virtual
+-- output for Sunshine, so it runs at a native 2560x1440 with scale = 1 rather
+-- than 4K downscaled. At scale 1 XWayland maps 1:1 and stays sharp on its own.
+--
+-- If you ever set a monitor scale above 1, XWayland apps (Steam, most games)
+-- will render at 1x and get upscaled -> blurry. The knob for that is
+-- xwayland.force_zero_scaling = true, which trades the blur for a too-small UI
+-- that each app must then scale itself. Left off deliberately: it is a no-op at
+-- scale 1 and only useful if you go back to a scaled display.
 
 -- hl.permission("/usr/(bin|local/bin)/grim", "screencopy", "allow")
 -- hl.permission("/usr/(lib|libexec|lib64)/xdg-desktop-portal-hyprland", "screencopy", "allow")
