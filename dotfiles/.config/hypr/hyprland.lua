@@ -23,11 +23,23 @@
 ------------------
 
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
+-- Catch-all default for any monitor. NOTE: output = "" matches EVERY monitor,
+-- so monitor-specific rules must come AFTER this block or they get shadowed.
 hl.monitor({
     output   = "",
     mode     = "preferred",
     position = "auto",
     scale    = "auto",
+})
+
+-- Main display. "preferred" above resolves to the EDID preferred timing, which
+-- for this panel is only 3840x2160@60 -- hence the explicit mode. 4K@160 needs
+-- DSC over DP 1.4a; the RTX 3080 Ti negotiates it fine.
+hl.monitor({
+    output   = "DP-2",
+    mode     = "3840x2160@160",
+    position = "auto",
+    scale    = 1.0,
 })
 
 

@@ -25,7 +25,7 @@
     "web-app": 5,
     "custom-agents": 6
   },
-  "promptQueueUseCount": 4,
+  "promptQueueUseCount": 5,
   "cachedGrowthBookFeatures": {
     "tengu_feedback_survey_config": {
       "minTimeBeforeFeedbackMs": 600000,
