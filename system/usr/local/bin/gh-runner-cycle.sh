@@ -28,8 +28,13 @@ exec incus exec ci --env REPO="$REPO" --env SUFFIX="$SUFFIX" --env REG_TOKEN="$R
     cp -a /opt/actions-runner/dist/. "$DIR/"
   fi
   # clean slate every cycle: no leftover work dir or credentials
-  rm -rf "$DIR/_work" "$DIR/.runner" "$DIR/.credentials" "$DIR/.credentials_rsaparams"
+  rm -rf "$DIR/_work" "$DIR/.runner" "$DIR/.credentials" "$DIR/.credentials_rsaparams" "$DIR/.docker"
   chown -R gh-runner:gh-runner "$DIR"
   runuser -u gh-runner -- bash -c "cd $DIR && ./config.sh --url https://github.com/wusthq/$REPO --token $REG_TOKEN --name ci-$REPO$SUFFIX --labels self-hosted,home,tunc-arch --ephemeral --unattended --replace"
+  # per-slot docker credentials: parallel jobs share one dockerd, and
+  # docker/login-action logs out in its post step — without this a finishing
+  # job wipes the creds a concurrent push is using
+  echo "DOCKER_CONFIG=$DIR/.docker" >> "$DIR/.env"
+  chown gh-runner:gh-runner "$DIR/.env"
   exec runuser -u gh-runner -- bash -c "cd $DIR && ./run.sh"
 '
