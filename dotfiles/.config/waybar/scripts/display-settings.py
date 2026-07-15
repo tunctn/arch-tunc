@@ -25,22 +25,34 @@ CURSOR_MIN, CURSOR_MAX = 12, 96
 
 
 def hyprctl(*args):
-    """Run hyprctl; return (ok, output)."""
+    """Run hyprctl; return (ok, output).
+
+    hyprctl exits 0 even when it refuses a command (it just prints the reason),
+    so for mutating calls `ok` must mean the reply was literally "ok".
+    """
     try:
         r = subprocess.run(["hyprctl", *args], capture_output=True, text=True, timeout=10)
     except (OSError, subprocess.TimeoutExpired) as e:
         return False, str(e)
     out = (r.stdout + r.stderr).strip()
-    return r.returncode == 0, out
+    return r.returncode == 0 and out.lower() == "ok", out
+
+
+def monitor_lua(name, mode, scale):
+    return (
+        f'hl.monitor({{ output = "{name}", mode = "{mode}", '
+        f'position = "auto", scale = {fmt_scale(scale)} }})'
+    )
 
 
 def monitors():
-    ok, out = hyprctl("-j", "monitors")
-    if not ok:
-        return []
+    """Live monitor list. Reads JSON, so it can't use hyprctl()'s "ok" check."""
     try:
-        return json.loads(out)
-    except json.JSONDecodeError:
+        r = subprocess.run(
+            ["hyprctl", "-j", "monitors"], capture_output=True, text=True, timeout=10
+        )
+        return json.loads(r.stdout)
+    except (OSError, subprocess.TimeoutExpired, json.JSONDecodeError):
         return []
 
 
@@ -73,10 +85,7 @@ def write_lua(rows, cursor_size):
         "",
     ]
     for name, mode, scale in rows:
-        lines.append(
-            f'hl.monitor({{ output = "{name}", mode = "{mode}", '
-            f'position = "auto", scale = {fmt_scale(scale)} }})'
-        )
+        lines.append(monitor_lua(name, mode, scale))
     lines += [
         "",
         "-- Cursor size only affects apps launched after a Hyprland restart.",
@@ -195,8 +204,9 @@ class Panel(Gtk.ApplicationWindow):
                 continue
             scale = r["scales"][idx]
             name, mode = m["name"], mode_of(m)
-            spec = f"{name},{mode},auto,{fmt_scale(scale)}"
-            ok, out = hyprctl("keyword", "monitor", spec)
+            # This Hyprland is configured in Lua, so `hyprctl keyword` is refused
+            # ("keyword can't work with non-legacy parsers"). eval runs Lua instead.
+            ok, out = hyprctl("eval", monitor_lua(name, mode, scale))
             if not ok:
                 failed.append(f"{name}: {out}")
                 continue
