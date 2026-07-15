@@ -45,6 +45,25 @@ hl.monitor({
     scale    = 1.25,
 })
 
+-- The output Sunshine streams when no physical display is attached. It is
+-- virtual, so it accepts any mode and there is no panel to match: 1440p120 is
+-- chosen to suit the Moonlight client, not hardware.
+--
+-- This block must exist. "preferred" in the catch-all above resolves to whatever
+-- the output advertises, and this one advertises only 1920x1080@60 (a lie -- it
+-- runs 2560x1440@120 and even 4K@240 fine). Without this, anything that falls
+-- back to hyprland.lua -- the panel's "Reset to config", or display.lua being
+-- absent -- silently drops the stream to 1080p60.
+--
+-- scale = 1 is deliberate: at scale 1 XWayland maps 1:1, so Steam and games stay
+-- sharp. A fractional scale here is what made Steam blurry.
+hl.monitor({
+    output   = "HEADLESS-2",
+    mode     = "2560x1440@120",
+    position = "auto",
+    scale    = 1,
+})
+
 
 ---------------------
 ---- MY PROGRAMS ----

@@ -352,28 +352,44 @@ class Panel(Gtk.ApplicationWindow):
     def _push(self, name, mode, scale):
         return hyprctl("eval", monitor_lua(name, mode, scale))
 
-    def _settled(self, want, timeout=4.0):
-        """Poll until the compositor reports `want`, or give up.
+    def _matches(self, want):
+        live = {
+            m["name"]: (fmt_mode(*current_mode(m)), round(float(m["scale"]), 6))
+            for m in monitors()
+        }
+        ok = all(
+            n in live and live[n][0] == mode and abs(live[n][1] - scale) < 1e-3
+            for n, mode, scale in want
+        )
+        return ok, live
 
-        Hyprland applies mode/scale asynchronously, so reading back immediately
-        races and reports a false rejection.
+    def _settled(self, want, timeout=4.0, hold=1.5):
+        """Poll until the compositor reports `want` and HOLDS it, or give up.
+
+        Two separate hazards:
+        - Hyprland applies mode/scale asynchronously, so reading back immediately
+          races and reports a false rejection. Hence polling rather than one read.
+        - A mode can appear and then be dropped a moment later. Accepting the
+          first match would persist a mode that never really ran, leaving
+          display.lua describing a display that doesn't exist. Hence `hold`:
+          the target must still be live after this long to count.
         """
         deadline = time.monotonic() + timeout
-        live = {}
         while True:
-            live = {
-                m["name"]: (fmt_mode(*current_mode(m)), round(float(m["scale"]), 6))
-                for m in monitors()
-            }
-            ok = all(
-                n in live
-                and live[n][0] == mode
-                and abs(live[n][1] - scale) < 1e-3
-                for n, mode, scale in want
-            )
-            if ok or time.monotonic() > deadline:
-                return ok, live
+            ok, live = self._matches(want)
+            if ok:
+                break
+            if time.monotonic() > deadline:
+                return False, live
             time.sleep(0.1)
+
+        end = time.monotonic() + hold
+        while time.monotonic() < end:
+            time.sleep(0.25)
+            ok, live = self._matches(want)
+            if not ok:
+                return False, live  # appeared, then fell back
+        return True, live
 
     def on_apply(self, _btn):
         targets = [r.target() for r in self.rows if r.selected_scale()]
