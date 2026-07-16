@@ -33,7 +33,8 @@
     "rename-conversation": 11,
     "frontend-design-plugin": 11,
     "custom-commands": 12,
-    "voice-mode": 12
+    "voice-mode": 12,
+    "colorterm-truecolor": 14
   },
   "promptQueueUseCount": 11,
   "cachedGrowthBookFeatures": {
@@ -890,7 +891,7 @@
   "hasVisitedPasses": false,
   "passesLastSeenRemaining": 3,
   "closedIssuesLastChecked": 1784188269054,
-  "lastPlanModeUse": 1784120200790,
+  "lastPlanModeUse": 1784188360436,
   "hasSeenAutoModeEntryWarning": true,
   "tipLifetimeShownCounts": {
     "artifact-publish-plan": 2,
@@ -923,7 +924,8 @@
     "rename-conversation": 1,
     "frontend-design-plugin": 1,
     "custom-commands": 1,
-    "voice-mode": 1
+    "voice-mode": 1,
+    "colorterm-truecolor": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1784107075518
