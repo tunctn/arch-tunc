@@ -3,7 +3,7 @@
 ## disks
     Filesystem                      Size  Used Avail Use% Mounted on
     /dev/mapper/ArchinstallVg-root   49G   12G   35G  25% /
-    /dev/mapper/ArchinstallVg-home  866G  386G  436G  47% /home
+    /dev/mapper/ArchinstallVg-home  866G  397G  426G  49% /home
 
 ## incus storage pools
     +---------+--------+-------------+---------+---------+
