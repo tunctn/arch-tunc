@@ -1,3 +1,4 @@
+aws-cli
 base
 base-devel
 bluez
@@ -7,6 +8,8 @@ cliphist
 cups
 cups-pk-helper
 docker
+docker-buildx
+docker-compose
 dolphin
 dunst
 efibootmgr
@@ -14,6 +17,7 @@ firefox
 gamemode
 gamescope
 git
+github-cli
 grim
 gst-plugin-pipewire
 htop
