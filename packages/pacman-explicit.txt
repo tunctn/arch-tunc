@@ -2,6 +2,7 @@ base
 base-devel
 bluez
 bluez-utils
+clang
 cliphist
 cups
 cups-pk-helper
@@ -36,6 +37,7 @@ lvm2
 mako
 mangohud
 mkinitcpio
+musl
 nano
 networkmanager
 network-manager-applet
@@ -53,6 +55,7 @@ pipewire-pulse
 polkit-kde-agent
 qt5-wayland
 qt6-wayland
+rustup
 sddm
 slurp
 smartmontools
@@ -65,6 +68,7 @@ tailscale
 ttf-dejavu
 ttf-liberation
 ufw
+unzip
 uwsm
 vim
 vulkan-tools
