@@ -5,6 +5,7 @@ bluez-utils
 cliphist
 cups
 cups-pk-helper
+docker
 dolphin
 dunst
 efibootmgr
@@ -39,9 +40,11 @@ nano
 networkmanager
 network-manager-applet
 nload
+nodejs
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
+npm
 nvidia-open
 pipewire
 pipewire-alsa
