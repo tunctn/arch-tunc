@@ -1,9 +1,0 @@
-config: {}
-description: ""
-name: br-f6e7b8adce14
-type: bridge
-used_by: []
-managed: false
-status: ""
-locations: []
-project: default
