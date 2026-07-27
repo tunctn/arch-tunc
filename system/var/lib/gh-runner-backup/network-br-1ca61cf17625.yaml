@@ -1,0 +1,9 @@
+config: {}
+description: ""
+name: br-1ca61cf17625
+type: bridge
+used_by: []
+managed: false
+status: ""
+locations: []
+project: default
