@@ -1,5 +1,5 @@
 {
-  "numStartups": 15,
+  "numStartups": 16,
   "installMethod": "native",
   "autoUpdates": false,
   "tipsHistory": {
@@ -34,7 +34,9 @@
     "frontend-design-plugin": 11,
     "custom-commands": 12,
     "voice-mode": 12,
-    "colorterm-truecolor": 14
+    "colorterm-truecolor": 14,
+    "plan-mode-for-complex-tasks": 16,
+    "ide-upsell-external-terminal": 16
   },
   "promptQueueUseCount": 11,
   "cachedGrowthBookFeatures": {
@@ -956,8 +958,7 @@
   "routineFiredWatermark": "2026-07-13T20:43:03.246Z",
   "groveConfigCache": {
     "02507ea3-27e7-45b5-a1bb-335510b3c4af": {
-      "grove_enabled": true,
-      "timestamp": 1784188268980
+      "timestamp": 1787151302165
     }
   },
   "officialMarketplaceAutoInstallAttempted": true,
@@ -989,8 +990,8 @@
   "passesUpsellSeenCount": 3,
   "hasVisitedPasses": false,
   "passesLastSeenRemaining": 3,
-  "closedIssuesLastChecked": 1784188269054,
-  "lastPlanModeUse": 1784203869822,
+  "closedIssuesLastChecked": 1787151302254,
+  "lastPlanModeUse": 1787151324882,
   "hasSeenAutoModeEntryWarning": true,
   "tipLifetimeShownCounts": {
     "artifact-publish-plan": 2,
@@ -1024,7 +1025,9 @@
     "frontend-design-plugin": 1,
     "custom-commands": 1,
     "voice-mode": 1,
-    "colorterm-truecolor": 1
+    "colorterm-truecolor": 1,
+    "plan-mode-for-complex-tasks": 1,
+    "ide-upsell-external-terminal": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1784107075518
