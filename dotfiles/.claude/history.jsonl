@@ -54,3 +54,4 @@
 {"display":"/theme","pastedContents":{},"timestamp":1787151347772,"project":"/home/tunc","sessionId":"c7c36682-05b9-475d-a948-e4b68ed9bf8a"}
 {"display":"hey claude, can this computer run qwen 3.8 27b?","pastedContents":{},"timestamp":1787151353985,"project":"/home/tunc","sessionId":"c7c36682-05b9-475d-a948-e4b68ed9bf8a"}
 {"display":"how much token/sec u are running on atm?","pastedContents":{},"timestamp":1787151483834,"project":"/home/tunc","sessionId":"c7c36682-05b9-475d-a948-e4b68ed9bf8a"}
+{"display":"if i want something like 30-60+ token/sec for 3.8 27b - what kind of gpu i need?","pastedContents":{},"timestamp":1787151559110,"project":"/home/tunc","sessionId":"c7c36682-05b9-475d-a948-e4b68ed9bf8a"}

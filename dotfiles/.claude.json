@@ -3,7 +3,7 @@
   "installMethod": "native",
   "autoUpdates": false,
   "tipsHistory": {
-    "artifact-publish-plan": 9,
+    "artifact-publish-plan": 16,
     "auto-copy-config-hint": 12,
     "new-user-warmup": 9,
     "default-permission-mode-config": 12,
@@ -985,7 +985,7 @@
   "lastPlanModeUse": 1787151324882,
   "hasSeenAutoModeEntryWarning": true,
   "tipLifetimeShownCounts": {
-    "artifact-publish-plan": 2,
+    "artifact-publish-plan": 3,
     "auto-copy-config-hint": 2,
     "new-user-warmup": 2,
     "default-permission-mode-config": 2,
