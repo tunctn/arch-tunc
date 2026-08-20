@@ -25,7 +25,7 @@
     "web-app": 5,
     "custom-agents": 6,
     "remote-control": 7,
-    "dynamic-workflows": 12,
+    "dynamic-workflows": 17,
     "workflow-size-prompting-ambient": 9,
     "guest-passes": 13,
     "feedback-command": 9,
@@ -36,7 +36,8 @@
     "voice-mode": 12,
     "colorterm-truecolor": 14,
     "plan-mode-for-complex-tasks": 16,
-    "ide-upsell-external-terminal": 16
+    "ide-upsell-external-terminal": 16,
+    "ultrareview-awareness": 17
   },
   "promptQueueUseCount": 11,
   "cachedGrowthBookFeatures": {
@@ -1035,7 +1036,7 @@
     "web-app": 1,
     "custom-agents": 1,
     "remote-control": 1,
-    "dynamic-workflows": 2,
+    "dynamic-workflows": 3,
     "workflow-size-prompting-ambient": 1,
     "guest-passes": 2,
     "feedback-command": 1,
@@ -1046,7 +1047,8 @@
     "voice-mode": 1,
     "colorterm-truecolor": 1,
     "plan-mode-for-complex-tasks": 1,
-    "ide-upsell-external-terminal": 1
+    "ide-upsell-external-terminal": 1,
+    "ultrareview-awareness": 1
   },
   "feedbackSurveyState": {
     "lastShownTime": 1784107075518
