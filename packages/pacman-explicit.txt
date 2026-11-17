@@ -54,6 +54,7 @@ noto-fonts-cjk
 noto-fonts-emoji
 npm
 nvidia-open
+pacman-contrib
 pipewire
 pipewire-alsa
 pipewire-jack
