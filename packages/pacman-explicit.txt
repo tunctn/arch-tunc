@@ -64,6 +64,7 @@ postgresql
 qt5-wayland
 qt6-wayland
 rustup
+sccache
 sddm
 slirp4netns
 slurp
