@@ -14,6 +14,7 @@ docker-compose
 dolphin
 dunst
 efibootmgr
+fio
 firefox
 fuse-overlayfs
 gamemode
